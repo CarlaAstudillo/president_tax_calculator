@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js" type="text/javascript"></script>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+
+
+
+
+
+    <title>Election 2016: Paycheck Calculator</title>
+    
+
+
+
+
+</head>
+<body>
+<div class="content row">
+
+   
+
+    <div class="content">
+
+        <div class="container_ibt">
+
+        	<h2>Election 2016: Paycheck Calculator</h2>
+
+            <div class="main">
+               <p>What is your annual income?</p>
+<div class="input-group">
+<span class="input-group-addon" id="basic-addon1">$</span>
+<input class="form-control" id="annual-income" name="input_txt" type="text">
+</div>
+ <p style='font-size: 30px;'>AND</p>
+
+	<p>How much is your paycheck (after-tax)?</p>
+<div class="input-group">
+<span class="input-group-addon" id="basic-addon2">$</span>
+<input class="form-control" id="paycheck_amt" name="input_txt" type="text">
+</div>
+
+<div id="input_results">
+</div>
+
+<hr>
+
+ <p style='font-size: 30px;'>OR</p>
+
+ <p>Explore how take-home pay will change across income groups:</p>
+
+ <!-- Single button -->
+<select class="selectpicker" title="Pick an income percentile">
+  <option>0%-20%</option>
+  <option>21%-40%</option>
+  <option>41%-60%</option>
+  <option>61%-80%</option>
+  <option>81%-90%</option>
+  <option>91%-95%</option>
+  <option>96%-99%</option>
+  <option>Top 1%</option>
+  <option>Top 0.1%</option>
+</select>
+
+<div id="submit_btn">
+
+<a id="submit" class="btn">
+  View your results
+</a>
+ </div>
+
+            </div>
+            <div class="aside">
+                <h3></h3>
+                <div class="class_order"></div>
+
+                <div class="results"></div>
+
+            </div>
+
+            <div class="credits"><b>Source:</b> <a href='http://www.taxpolicycenter.org' target='_blank'>Tax Policy Center</a></div>
+           
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+<script>
+
+var pymChild = null;
+
+/*$.preloadImages = function() {
+    for (var i = 0; i < arguments.length; i++) {
+        $("<img />").attr("src", arguments[i]);
+    }
+}
+
+$.preloadImages("https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/clinton_c.png", "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/bernie_c.png", "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/trump_c.png", "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/cruz_c.png", "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/rubio_c.png", "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/kasich_c.png");*/
+
+
+var json = {
+
+	
+    "Hillary Clinton": 
+       {
+           "percentile1": 0.000,
+           "percentile2": -0.001,
+           "percentile3": -0.001,
+           "percentile4": -0.002,
+           "percentile5": -0.002,
+           "percentile6": -0.003,
+           "percentile7": -0.008,
+           "percentile8": -0.050,
+           "percentile9": -0.076,
+           "img": "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/clinton_c.png",
+           "quip": "No new taxes, unless you’re rich."
+       },
+        "Ted Cruz": 
+       {
+           "percentile1": 0.004,
+           "percentile2": 0.019,
+           "percentile3": 0.032,
+           "percentile4": 0.049,
+           "percentile5": 0.062,
+           "percentile6": 0.081,
+           "percentile7": 0.121,
+           "percentile8": 0.260,
+           "percentile9": 0.290,
+           "img": "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/cruz_c.png",
+           "quip": "The tax code is broken. Let’s change it completely."
+       },
+       "Marco Rubio": 
+       {
+           "percentile1": 0.013,
+           "percentile2": 0.011,
+           "percentile3": 0.020,
+           "percentile4": 0.024,
+           "percentile5": 0.032,
+           "percentile6": 0.032,
+           "percentile7": 0.032,
+           "percentile8": 0.089,
+           "percentile9": 0.115,
+           "img": "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/rubio_c.png",
+           "quip": "Children are the future. Oh, and a tax break too."
+       },
+       "Bernie Sanders": 
+       {
+           "percentile1": -0.013,
+           "percentile2": -0.051,
+           "percentile3": -0.085,
+           "percentile4": -0.098,
+           "percentile5": -0.103,
+           "percentile6": -0.099,
+           "percentile7": -0.116,
+           "percentile8": -0.335,
+           "percentile9": -0.448,
+           "img": "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/bernie_c.png",
+           "quip": "Single-payer healthcare isn’t free."
+       },
+
+         "Donald Trump": 
+       {
+           "percentile1": 0.010,
+           "percentile2": 0.031,
+           "percentile3": 0.049,
+           "percentile4": 0.058,
+           "percentile5": 0.054,
+           "percentile6": 0.057,
+           "percentile7": 0.085,
+           "percentile8": 0.175,
+           "percentile9": 0.189,
+           "img": "https://s3-us-west-2.amazonaws.com/ibt-viz/2016/candidates/circles/trump_c.png",
+           "quip": "Your tax cut's gonna be yuuuge."
+       }
+   
+}
+
+var json2 = {
+	"0%-20%": 
+       {
+           "annualincome": 20000,
+           "paycheck": 678
+       },
+    "21%-40%": 
+       {
+           "annualincome": 35000,
+           "paycheck": 1161
+       },
+       "41%-60%": 
+       {
+           "annualincome": 55000,
+           "paycheck": 1743
+       },
+        "61%-80%": 
+       {
+           "annualincome": 100000,
+           "paycheck": 2998
+       },
+
+         "81%-90%": 
+       {
+           "annualincome": 180000,
+           "paycheck": 5143
+       },
+        "91%-95%": 
+       {
+           "annualincome": 250000,
+           "paycheck": 6899
+       },
+        "96%-99%": 
+       {
+           "annualincome": 500000,
+           "paycheck": 12853
+       },
+        "Top 1%": 
+       {
+           "annualincome": 1000000,
+           "paycheck": 23843
+       },
+
+       "Top 0.1%": 
+       {
+           "annualincome": 5000000,
+           "paycheck": 117254
+       }
+
+
+}
+
+
+
+
+
+
+$(window).load(function(){
+
+	function commaSeparateNumber(val){
+    while (/(\d+)(\d{3})/.test(val.toString())){
+      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    }
+    return val;
+  }
+
+	$('.selectpicker').selectpicker({
+  size: 9
+});
+
+
+
+
+	$('.selectpicker').change(function () {
+    pymChild.sendHeight();
+    var selectedPercentile = $(this).find("option:selected").text();
+
+    function matchPercentile(classMatch) {
+    	$.each(json2, function (key, data) {
+
+    		if (key ==  selectedPercentile) {
+
+
+
+
+    			$('#annual-income').val(commaSeparateNumber(data.annualincome));
+
+    			$('#paycheck_amt').val(commaSeparateNumber(data.paycheck));
+
+    		}
+
+
+
+    	})
+
+
+   
+   
+}
+
+ matchPercentile(selectedPercentile)
+});
+
+	
+
+
+    $("input[type='text']").keyup(function(event){
+      if(event.which >= 37 && event.which <= 40){
+          event.preventDefault();
+      }
+      var $this = $(this);
+      var num = $this.val().replace(/,/gi, "").split("").reverse().join("");
+      
+      var num2 = AddAutomaticCommas(num.replace(/(.{3})/g,"$1,").split("").reverse().join(""));
+      
+      $this.val(num2);
+  });
+
+
+$( "#submit" ).click(function() {
+	var trHTML = '';
+
+	$('.results').html('')
+
+
+    var money = $('#annual-income').val();
+
+    function removeCommas(str) {
+    while (str.search(",") >= 0) {
+        str = (str + "").replace(',', '');
+    }
+    return str;
+};
+
+var paycheck = $('#paycheck_amt').val();
+
+ var moneynum = removeCommas(money);
+var paychecknum = removeCommas(paycheck);
+
+
+ if ($.isNumeric(moneynum)) {
+ 	$("#input_results").html("")
+ 	$("h3").html("Here’s how your biweekly paycheck will change:")
+
+ 	var whatclass = DivideintoClass(moneynum)
+
+ 	 
+
+
+ 	function matchCand(classMatch) {
+
+ 	$.each(json, function (key, data) {
+
+ 		var pay_results = paychecknum * data[classMatch]
+
+ 		if (pay_results >= 0) {
+
+ 			 trHTML += '<div id="candrow"><div class="add"> +$' + parseFloat(pay_results, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + '</div><div id="candidate"><img src="' + data.img + '">' + key + '<div id="quip">' + data.quip + '</div></div></div>';
+
+
+
+ 		}
+
+ 		else {
+
+ 			trHTML += '<div id="candrow"><div class="takeaway"> -$' + parseFloat(pay_results *-1, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + '</div><div id="candidate"><img src="' + data.img + '">' + key + '<div id="quip">' + data.quip + '</div></div></div>';
+
+ 		}
+
+    
+
+
+	});
+
+	$('.results').append(trHTML);
+  pymChild.sendHeight();
+
+
+	 };
+
+	 matchCand(whatclass)
+
+   pymChild.sendHeight();
+
+ 
+ 	
+ }
+
+ else  {
+ 	$("#input_results").html("Oops, that's not a valid number. Try again.")
+ }
+
+
+});
+
+pymChild = new pym.Child();
+
+function AddAutomaticCommas(convertString){
+    
+    
+    if(convertString.substring(0,1) == ","){
+        
+        return convertString.substring(1, convertString.length)            
+        
+    }
+    return convertString;
+    
+}
+
+function DivideintoClass(num){
+    
+    
+    if (num <= 23099){
+        
+       $(".class_order").html("Because you're in the <b>0-20% income percentile</b>:")
+
+       return "percentile1"         
+        
+    }
+    else if (num >=   23100 && num <= 45153) {
+    	$(".class_order").html("Because you're in the <b>21-40% income percentile</b>:")
+    	return "percentile2"
+    }
+
+    else if (num >= 45154 && num <= 80760) {
+    	$(".class_order").html("Because you're in the <b>41-60% income percentile</b>:")
+    	return "percentile3"
+    }
+
+    else if (num >= 80761 && num <= 142601) {
+    	$(".class_order").html("Because you're in the <b>61-80% income percentile</b>:")
+    	return "percentile4"
+    }
+
+    else if (num >= 142602 && num <= 209113) {
+    	$(".class_order").html("Because you're in the <b>81-90% income percentile</b>:")
+    	return "percentile5"
+    }
+
+    else if (num >= 209114 && num <= 295756) {
+    	$(".class_order").html("Because you're in the <b>91-95% income percentile</b>:")
+    	return "percentile6"
+    }
+
+    else if (num >= 295757 && num <= 732323) {
+    	$(".class_order").html("Because you're in the <b>95-99% income percentile</b>:")
+    	return "percentile7"
+    }
+
+    else if (num >= 732324 && num <= 3769396) {
+    	$(".class_order").html("Because you're in the <b>Top 1% income percentile</b>:")
+    	return "percentile8"
+    }
+
+    else if (num >= 3769397) {
+    	$(".class_order").html("Because you're in the <b>Top 0.1% income percentile:</b>")
+    	return "percentile9"
+    }
+
+    pymChild.sendHeight();
+
+    
+}
+
+
+pymChild = new pym.Child();
+
+});
+
+
+
+
+
+
+
+</script>
+
+<script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/ibt-viz/pym.js/dist/pym.min.js"></script>
+<script>
+</script>
+
+</body>
+
+
+</html>
