@@ -86,7 +86,7 @@ button.btn.dropdown-toggle.btn-default, button.btn.dropdown-toggle.btn-default:h
   color: #FFF;
   float: right;
   margin-top: 0.7em;
-  font-size: 35px;
+  font-size: 30px;
   width: auto;
   padding: 10px 20px;
 }
@@ -103,17 +103,14 @@ button.btn.dropdown-toggle.btn-default, button.btn.dropdown-toggle.btn-default:h
 }
 
 img {
-  width: 50px;
+  width: 80px;
   margin: 10px 10px 0 10px;
 }
 
 #candidate {
    margin: 10px 15px;
+   width: 30%;
    font-weight: bold;
-   padding-top: 10px;
-   width: 50%;
-
-   font-size: 17px;
 
 }
 
@@ -122,19 +119,12 @@ img {
 
 
 .results {
-	margin-top: 60px;
+	margin-top: 20px;
 }
 
 .credits {
   clear: left;
-}
-
-#quip {
-  font-size: 0.7em;
-  font-weight: normal;
-  padding: 0 5px;
-  line-height: 1;
-  padding-top: 5px;
+  padding-top: 70px;
 }
 
 table, th, td {
